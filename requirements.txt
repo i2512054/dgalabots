@@ -6,3 +6,4 @@ pusher>=3.3
 python-dotenv>=1.0
 tzdata>=2024.1
 requests
+Flask
