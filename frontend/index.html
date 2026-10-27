@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Joyería D'GALA · Asistente virtual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" href="favicon.svg" />
+</head>
+<body>
+  <div class="main-container" id="chat-area">
+      <main class="chat-area">
+          <header class="chat-header">
+              <div class="user-details">
+                  <img src="https://i.pravatar.cc/150?img=44" alt="User">
+                  <div>
+                      <h3>Joyería D'Gala</h3>
+                      <span class="status">En línea</span>
+                  </div>
+              </div>
+              <div class="header-actions"></div>
+          </header>
+          <div class="messages-container" id="messagesContainer"></div>
+          <footer class="chat-input-area">
+            <button class="attach-btn"><i class="fa-solid fa-paperclip"></i></button>
+            <input type="text" id="messageInput" placeholder="Escribe un mensaje...">
+            <button type="button" class="send-btn" id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+          </footer>
+      </main>
+  </div>
+  <div class="app" style="display:none;">
+    <header class="top">
+      <div class="brand">
+        <h1>Joyería D'GALA</h1>
+        <p class="status"><span class="dot off" id="status-dot" aria-hidden="true"></span><span id="status-text">Conectando…</span></p>
+      </div>
+      <button type="button" id="reset" class="ghost">Nueva conversación</button>
+    </header>
+
+    <main id="log" class="log" aria-live="polite" aria-label="Conversación"></main>
+
+    <section class="chips" aria-label="Preguntas rápidas">
+      <button type="button" class="chip" data-text="Hola">Saludar</button>
+      <button type="button" class="chip" data-text="¿Cuál es el horario de atención?">Horario de atención</button>
+      <button type="button" class="chip" data-text="¿Qué medios de pago aceptan?">Medios de pago</button>
+      <button type="button" class="chip" data-text="Cuéntame sobre la empresa">La empresa</button>
+      <button type="button" class="chip" data-text="Lista de facturas">Facturas</button>
+    </section>
+
+    <form id="composer" class="composer" autocomplete="off">
+      <label for="input" class="sr-only">Escribe tu mensaje</label>
+      <textarea id="input" rows="1" maxlength="2000" placeholder="Escribe tu pregunta" required></textarea>
+      <button type="submit" id="send">Enviar</button>
+    </form>
+  </div>
+
+  <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
