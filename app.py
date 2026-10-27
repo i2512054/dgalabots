@@ -276,8 +276,11 @@ app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
 if __name__ == "__main__":
     # Sin --reload a propósito: en Windows el modo reload puede romper los subprocesos del MCP.
     uvicorn.run(
-        app, host="0.0.0.0", 
-        port=int(os.getenv("PORT", "8001")), 
-        ssl_keyfile="key.pem", 
-        ssl_certfile="cert.pem",
+        app, host="0.0.0.0"
     )
+#    uvicorn.run(
+#        app, host="0.0.0.0", 
+#        port=int(os.getenv("PORT", "8001")), 
+#        ssl_keyfile="key.pem", 
+#        ssl_certfile="cert.pem",
+#    )
