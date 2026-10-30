@@ -8,6 +8,7 @@ Servidor MCP (librería FastMCP, transporte stdio) con 5 herramientas para el ch
   6. lista_de_facturas
   7. lista_de_categorias
   8. lista_de_productos_por_categoria
+  9. lista_de_servicios
 
 IMPORTANTE: un servidor stdio no debe escribir nada en stdout (print),
 porque ese canal se usa para el protocolo MCP. Para depurar usa stderr.
@@ -162,17 +163,17 @@ def informacion_empresa() -> str:
 @mcp.tool
 def reserva_de_citas() -> str:
     """
-    Devuelve enlace para realizar reserva de citas (titulo, url y descripcion).
+    Devuelve enlace para realizar reserva de citas para un servicio personalizado.
 
     Úsala cuando te pregunten, deseo realizar una coordinacion de un servicio personalizado de joyería. quiero personalizar un servicio de joya,
-    deseo saber como es el servicio especial para una joya, 
+    deseo saber como es el servicio especial para una joya, quiero agendar una cita para un servicio especial, 
     """
     return (
         "Reserva tu cita en Joyería D'Gala:\n"
         "Agenda una visita para recibir asesorías personalizadas, diseño a medida, "
         "restauración de joyas o compra de piezas artesanales en oro y plata. "
         "Atención de 9:00 AM a 18:00 PM.\n\n"
-        "<a href='https://dgala2026.alwaysdata.net/calendly' target='_blank'>Ingresar aquí</a>"
+        "https://dgala2026.alwaysdata.net/calendly"
     )
 
 @mcp.tool
@@ -211,7 +212,8 @@ def lista_de_productos_por_categoria(categoria: str) -> str:
     """
     Devuelve la lista de productos por categoria
     Úsala cuando el usuario solicita la lista de productos de categoría, por ejemplo "Puedes mostrarme los productos de Anillos",
-    "Listame los productos Medallas", "Muestrame los productos de Aretes", "Qué productos tienes disponible de Cadenas" o "Tienes productos de Cadenas"
+    "Listame los productos de Medallas", "Muestrame los productos de Aretes", "Qué productos tienes disponible de Cadenas", "Tienes productos de Cadenas"
+    "que productos tienes por categoría Anillos", "que productos tieines disponibles de Aretes", "lista de productos por categoría Anillos"
     
     Args:
         categoria: Nombre de categoría al que se va a filtrar.
@@ -225,6 +227,23 @@ def lista_de_productos_por_categoria(categoria: str) -> str:
         return (json.dumps(data))
     else:
         return (f"Error en la petición: {response.status_code}")
+
+@mcp.tool
+def lista_de_servicios() -> str:
+    """Devuelve la lista de servicios que ofrece o realiza la empresa.
+
+    Úsala cuando pregunten que servicios ofrece o que tipos de servicios ofrece.
+    """
+    return (
+        "Lista de Servicios:\n"
+        "- Mantenimiento de Joya\n"
+        "- Grabado\n"
+        "- Diseño\n"
+        "- Ajuste de Talla\n"
+        "- Engaste de Diamante\n"
+        "- Pasado de Perlas\n"
+        "- Restauración"
+    )
 
 
 if __name__ == "__main__":

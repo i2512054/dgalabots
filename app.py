@@ -54,6 +54,7 @@ Tienes herramientas para consultar datos reales de la empresa:
 - lista_de_facturas: cuando el usuario solicita las compras realizadas.
 - lista_de_categorias: cuando el usuario solicita la lista de categorias.
 - lista_de_productos_por_categoria: cuando el usuario solicita la lista de productos por categoria.
+- lista_de_servicios: cuando el usuario solicita la lista de servicios.
 
 Reglas:
 - Usa las herramientas para responder estos temas; no inventes datos.
@@ -276,7 +277,8 @@ app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
 if __name__ == "__main__":
     # Sin --reload a propósito: en Windows el modo reload puede romper los subprocesos del MCP.
     uvicorn.run(
-        app, host="0.0.0.0"
+        app, host="0.0.0.0", 
+        port=int(os.getenv("PORT", "8001"))
     )
 #    uvicorn.run(
 #        app, host="0.0.0.0", 

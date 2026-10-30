@@ -23,7 +23,8 @@ const NOMBRES_TOOLS = {
   reserva_de_citas: "Reserva de citas",
   lista_de_facturas: "Lista de facturas",
   lista_de_categorias: "Lista de categorías",
-  lista_de_productos_por_categoria: "Lista de productos por categoría"
+  lista_de_productos_por_categoria: "Lista de productos por categoría",
+  lista_de_servicios: "Lista de servicios"
 };
 
 let sessionId = localStorage.getItem("session_id");
@@ -104,6 +105,8 @@ function escapeHtml(texto) {
 }
 
 // Convierte el texto del bot a HTML seguro: negritas, viñetas y párrafos.
+let mcpTool = "";
+let sendLocal = false;
 function formatear(texto) {
   const lineas = escapeHtml(texto).split("\n");
   let html = "";
@@ -112,47 +115,68 @@ function formatear(texto) {
   for (const linea of lineas) {
     const item = linea.match(/^\s*[-*•]\s+(.*)$/);
     const conNegrita = (s) => s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-
     if (item) {
-      if (!enLista) { html += "<ul>"; enLista = true; }
-      html += `<li>${conNegrita(item[1])}</li>`;
+      if (!enLista) { html += "<ol class='rounded-list'>"; enLista = true; }
+      html += `<li><a data-mcp='${mcpTool.toLocaleLowerCase()}' data-content='${item[1]}' href='javascript:return false;' onclick='getResource(this);'>${conNegrita(item[1])}</a></li>`;
     } else {
-      if (enLista) { html += "</ul>"; enLista = false; }
+      if (enLista) { html += "</ol>"; enLista = false; }
       if (linea.trim()) html += `<p>${conNegrita(linea)}</p>`;
     }
   }
-  if (enLista) html += "</ul>";
+  if (enLista) html += "</ol>";
   return html;
 }
 
-function agregarMensaje(rol, texto, { tools = [], error = false } = {}) {
-  const wrap = document.createElement("div");
-  wrap.className = `msg ${rol}${error ? " error" : ""}`;
-
-  const burbuja = document.createElement("div");
-  burbuja.className = "bubble";
-  if (rol === "bot") burbuja.innerHTML = formatear(texto);
-  else burbuja.innerHTML = texto;
-  wrap.appendChild(burbuja);
-
-  const fila = document.createElement("div");
-  fila.className = "tools";
-  const badge = document.createElement("span");
-  badge.className = "tool-badge";    
-  badge.innerHTML = "<b>" + getTimeResponse() + "</b>";
-  fila.appendChild(badge);
-  wrap.appendChild(fila);
-
+function agregarMensaje(rol, texto, { tools = [], error = false } = {}) {  
   if (tools.length) {
     console.clear();
     console.log(tools);
     for (const t of tools) {
       let x = `Consultó: ${NOMBRES_TOOLS[t] || t}`;
+      mcpTool = NOMBRES_TOOLS[t] || t;
       console.log(x);
       console.log("-------------------------");
       console.log(texto);
+      console.log("-------------------------");
+      console.log(mcpTool);
     }
   }
+  
+  const wrap = document.createElement("div");
+  wrap.className = `msg ${rol}${error ? " error" : ""}`;
+
+  const burbuja = document.createElement("div");
+  burbuja.className = "bubble";
+  console.log(mcpTool.toLowerCase());
+  if (rol === "bot") { 
+    if (mcpTool.toLowerCase() == "reserva de citas") {
+      let sHTML = "";
+      sHTML += "<nav class='categorias' aria-labelledby='cat-titulo'>";
+      sHTML += "<p>Para realizar una coordinación de una cita para un servicio personalizado o detalles de productos de joyería, ingrese al siguiente link, para reservar una cita online:</p><br />";
+      sHTML += "<a href='http://dgala2026.alwaysdata.net/calendly' target='_blank' class='categorias__item'><b>Agendar</b></a>";
+      sHTML += "<p><br />¡Estaremos encantados de atenderte!</p>";
+      sHTML += "</nav>";
+      burbuja.innerHTML = sHTML;
+    } else {
+      if(sendLocal == false) {
+        burbuja.innerHTML = formatear(texto); 
+      } else {
+        burbuja.innerHTML = texto; 
+        sendLocal = false;
+      }
+    }
+  } else {
+    burbuja.innerHTML = texto;
+  }
+  wrap.appendChild(burbuja);
+
+  const fila = document.createElement("div");
+  fila.className = "tools";
+  const badge = document.createElement("span");
+  badge.className = "tool-badge";
+  badge.innerHTML = "<b>" + getTimeResponse() + "</b>";
+  fila.appendChild(badge);
+  wrap.appendChild(fila);
 
   /*if (tools.length) {
     const fila = document.createElement("div");
@@ -278,3 +302,38 @@ input2.addEventListener("keydown", (e) => {
     enviar(input2.value);
   }
 });
+
+async function getResource(obj) {
+  let mcp = obj.dataset.mcp;
+  let content = obj.dataset.content;
+  console.log("------------------------------------");
+  console.log(mcp);
+  console.log(content);
+  if(mcp == "lista de categorías") {
+    let endpoint = `https://dgala2026.alwaysdata.net/api/v1/products/list/${content}`;
+    console.log(endpoint);
+    const response = await fetch(endpoint, {
+      method: "GET"
+    });
+    json = await response.json();
+    console.log("------------------------------------");    
+    console.log(json);
+    let sHTML = "<p>En la categoría de " + content + " tenemos disponibles los siguientes productos:</p>";
+    sHTML += "<ol class='rounded-list'>";
+    for(item of json) {
+      sHTML += "<li>";
+      sHTML += "  <a ";
+      sHTML += "    data-mcp='lista de productos por categoría' ";
+      sHTML += "    data-content='" + item.name + "' ";
+      sHTML += "    href='javascript:return false;' ";
+      sHTML += "    onclick='getResource(this);''>";
+      sHTML += "      " + item.name;
+      sHTML += "  </a>";
+      sHTML += "</li>";
+    }
+    sHTML += "</ol>";
+    sHTML += "<p>¿Si deseas obtener información detallada del producto? Has clic en el producto o bien solicitas el producto por su nombre.</p>";
+    sendLocal = true;
+    agregarMensaje("bot", sHTML);
+  }
+}
